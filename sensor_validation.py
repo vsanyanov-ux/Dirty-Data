@@ -50,3 +50,23 @@ print("Ошибки валидации:")
 for idx, err in errors:
     print(f"\nRow {idx}:")
     print(err)
+
+# --- новый маленький шаг: сохраняем результат в файлы ---
+
+# Валидные записи -> чистый датасет
+valid_df = pd.DataFrame([r.model_dump() for _, r in valid_readings])
+valid_df.to_csv("clean_sensor_data.csv", index=False)
+
+# Ошибки -> отдельный отчёт
+error_rows = []
+for idx, err in errors:
+    error_rows.append({
+        "row_index": idx,
+        "errors": str(err).replace("\n", " | ")
+    })
+
+errors_df = pd.DataFrame(error_rows)
+errors_df.to_csv("sensor_data_errors.csv", index=False)
+
+print("Сохранено clean_sensor_data.csv и sensor_data_errors.csv")
+
