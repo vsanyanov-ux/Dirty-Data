@@ -1,0 +1,31 @@
+[
+  {
+    "sensor_id": "A1",
+    "temperature_c": 25.5,
+    "humidity_percent": 60,
+    "location": "Room1",
+    "extra_field": "oops"
+  },
+  {
+    "sensor_id": "B2",
+    "temperature_c": "30",
+    "humidity_percent": 55
+  },
+  {
+    "sensor_id": "C3",
+    "temperature_c": 22,
+    "location": "Room2"
+  },
+  {
+    "sensor_id": "D4",
+    "temperature_c": 18.0,
+    "humidity_percent": 70,
+    "timestamp": "2023-10-26T10:00:00Z"
+  },
+  {
+    "sensor_id": "E5",
+    "temperature_c": null,
+    "humidity_percent": 65,
+    "location": "Room3"
+  }
+]
