@@ -22,6 +22,17 @@ class SensorReading(BaseModel):
     humidity_percent: int
     location: Optional[str] = None # новый стиль конфигурации Pydantic v2
 
+    @field_validator("temperature_c", mode="before")
+    def parse_temperature(cls, v):
+        if v is None:
+            return v
+        # допускаем строки вида "23.5", " 23,5 " и т.п.
+        if isinstance(v, str):
+            v = v.strip().replace(",", ".")
+            if v == "":
+                return None
+        return float(v)
+
 
 import pandas as pd
 
