@@ -10,6 +10,7 @@ class SensorReading(BaseModel):
     humidity_percent: int
     location: Optional[str] = None # новый стиль конфигурации Pydantic v2
 
+    # --- Исправляем некорректные данные в температуре --
     @field_validator("temperature_c", mode="before")
     def parse_temperature(cls, v):
         if v is None:
@@ -68,4 +69,16 @@ errors_df = pd.DataFrame(error_rows)
 errors_df.to_csv("sensor_data_errors.csv", index=False)
 
 print("Сохранено clean_sensor_data.csv и sensor_data_errors.csv")
+# data quality summary по датасету 
+total_rows = len(df)
+valid_rows = len(valid_df)
+error_rows_count = len(errors_df)
+
+valid_share = valid_rows / total_rows * 100 if total_rows else 0
+error_share = error_rows_count / total_rows * 100 if total_rows else 0
+
+print(f"Всего строк: {total_rows}")
+print(f"Валидных: {valid_rows} ({valid_share:.1f}%)")
+print(f"С ошибками: {error_rows_count} ({error_share:.1f}%)")
+
 
