@@ -69,6 +69,21 @@ errors_df = pd.DataFrame(error_rows)
 errors_df.to_csv("sensor_data_errors.csv", index=False)
 
 print("Сохранено clean_sensor_data.csv и sensor_data_errors.csv")
+
+# Топ типов ошибок
+error_stats = (
+    errors_df["errors"]
+    .value_counts()
+    .reset_index()
+    .rename(columns={"index": "error_type", "errors": "count"})
+)
+
+error_stats.to_csv("sensor_error_stats.csv", index=False)
+
+print("\nТоп ошибок:")
+print(error_stats)
+
+
 # data quality summary по датасету 
 total_rows = len(df)
 valid_rows = len(valid_df)
