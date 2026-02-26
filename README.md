@@ -1,48 +1,42 @@
-# 🔍 Dirty Data Detective: Sensor Data Validation with Pydantic
+# 🔍 Dirty Data Detective: Sensor Data Validation Pipeline
 
-**Проект по очистке и валидации "грязных" данных от сенсоров с использованием Pydantic для строгого контроля входящих данных.**
+**Учебный проект по очистке и валидации «грязных» данных от сенсоров с использованием Pydantic, pandas и простых метрик качества данных.**
 
 ## 📋 О проекте
 
-Это **обучающий проект** для инженеров данных и разработчиков, которые хотят научиться:
-- Работать с неконсистентными данными из внешних источников
-- Использовать Pydantic для строгой валидации схемы данных
-- Правильно обрабатывать ошибки валидации
-- Применять best practices для очистки данных в AI/ML пайплайнах
+Это **обучающий проект для Junior AI / Data Engineer**, в котором на маленьком примере показан полноценный data pipeline:
 
-### Суть задачи
+- чтение сырых JSON‑данных сенсоров;
+- строгая валидация и частичная авто‑очистка через Pydantic v2;
+- разделение данных на «чистые» и «ошибочные»;
+- вычисление базовых метрик качества (доля валидных/невалидных записей);
+- агрегированный отчёт по типам ошибок.
 
-Представь, что сенсоры отправляют данные, но качество хромает:
-- ❌ Некоторые значения — не того типа (строка вместо float)
-- ❌ Отсутствуют обязательные поля
-- ❌ Появляются лишние неописанные поля
-- ❌ Встречаются None и NaN
-
-Задача — **приручить этот хаос** с помощью Pydantic и Pandas!
-
----
+Проект можно использовать как:
+- учебный пример «умной очистки» перед аналитикой/ML;
+- заготовку для более сложного пайплайна качества данных.
 
 ## 📂 Структура проекта
 
-```
+```text
 Dirty-Data/
-├── sensor_validation.py    # Основной скрипт с валидацией
-├── messy_data.json         # "Грязные" данные для тестирования
-├── venv/                   # Виртуальное окружение Python
-└── README.md               # Этот файл
+├── sensor_validation.py   # Основной скрипт: валидация, очистка, отчёты
+├── messy_data.json        # Пример "грязных" данных сенсоров (внешний вход)
+├── clean_sensor_data.csv  # (output) Чистые валидные записи сенсоров
+├── sensor_data_errors.csv # (output) Лог строк, не прошедших валидацию
+├── sensor_error_stats.csv # (output) Агрегированная статистика по типам ошибок
+└── README.md              # Документация проекта
 ```
 
----
+`clean_sensor_data.csv`, `sensor_data_errors.csv` и `sensor_error_stats.csv` генерируются скриптом при запуске и не хранятся в репозитории по умолчанию.
 
 ## 🛠️ Технический стек
 
-- **Python 3.x** — язык разработки
-- **Pydantic v2** — валидация и парсинг данных с использованием ConfigDict
-- **Pandas** — работа с табличными данными (DataFrame)
-- **JSON** — формат хранения тестовых данных
-- **Git & GitHub** — версионирование и коллаборация
-
----
+- **Python 3.x** — язык разработки;
+- **Pydantic v2** — валидация и парсинг данных (ConfigDict, `field_validator`);
+- **Pandas** — работа с табличными данными (DataFrame);
+- **JSON** — формат входных данных;
+- **Git & GitHub** — версионирование и работа с кодом.
 
 ## 🚀 Быстрый старт
 
@@ -53,15 +47,17 @@ git clone https://github.com/vsanyanov-ux/Dirty-Data.git
 cd Dirty-Data
 ```
 
-### 2. Создай и активируй venv
+### 2. (Опционально) создай и активируй venv
 
-**На Windows (PowerShell):**
-```powershell
+**Windows (PowerShell):**
+
+```bash
 python -m venv venv
 venv\Scripts\Activate.ps1
 ```
 
-**На macOS / Linux:**
+**macOS / Linux:**
+
 ```bash
 python -m venv venv
 source venv/bin/activate
@@ -73,187 +69,161 @@ source venv/bin/activate
 pip install pandas pydantic
 ```
 
-### 4. Запусти скрипт
+### 4. Проверь или отредактируй входные данные
+
+Файл `messy_data.json` содержит небольшой набор «грязных» записей сенсоров, например:
+
+```json
+[
+  {
+    "sensor_id": "A1",
+    "temperature_c": 25.5,
+    "humidity_percent": 60,
+    "location": "Room1",
+    "extra_field": "oops"
+  },
+  {
+    "sensor_id": "B2",
+    "temperature_c": "30",
+    "humidity_percent": 55
+  },
+  {
+    "sensor_id": "F6",
+    "temperature_c": "30,2",
+    "humidity_percent": 45
+  }
+]
+```
+
+Можно свободно менять этот файл и смотреть, как ведёт себя пайплайн.
+
+### 5. Запусти пайплайн
 
 ```bash
 python sensor_validation.py
 ```
 
----
+После запуска появятся (или обновятся):
 
-## 📊 Как это работает
+- `clean_sensor_data.csv`
+- `sensor_data_errors.csv`
+- `sensor_error_stats.csv`
 
-### Шаг 1: Грязные данные
+А в консоли выведутся DataFrame с исходными данными, список ошибок и краткое резюме качества данных.
 
-```json
-[
-  {"sensor_id": "A1", "temperature_c": 25.5, "humidity_percent": 60, "location": "Room1", "extra_field": "oops"},
-  {"sensor_id": "B2", "temperature_c": "30", "humidity_percent": 55},
-  {"sensor_id": "C3", "temperature_c": 22, "location": "Room2"},
-  {"sensor_id": "D4", "temperature_c": 18.0, "humidity_percent": 70, "timestamp": "2023-10-26T10:00:00Z"},
-  {"sensor_id": "E5", "temperature_c": null, "humidity_percent": 65, "location": "Room3"}
-]
-```
+## 📊 Как работает пайплайн
 
-**Проблемы:** лишние поля, пропуски, неверные типы данных, None-значения.
+### Шаг 1. Вход: «грязные» данные сенсоров
 
-### Шаг 2: Pydantic-модель со строгой валидацией
+Скрипт читает внешний `messy_data.json` и загружает его в `pandas.DataFrame`:
+
+- возможны **неверные типы** (`"30"` или `"30,2"` вместо числа);
+- **отсутствуют обязательные поля** (`humidity_percent`, `location`);
+- встречаются **лишние поля**, не описанные в схеме (`extra_field`, `timestamp`);
+- могут быть `null`/`NaN`.
+
+### Шаг 2. Pydantic‑модель и авто‑очистка
+
+Используется модель:
 
 ```python
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 from typing import Optional
 
 class SensorReading(BaseModel):
-    model_config = ConfigDict(extra='forbid')  # Запрет любых неописанных полей!
-    
+    model_config = ConfigDict(extra='forbid')
+
     sensor_id: str
-    temperature_c: float  # Обязательное поле
-    humidity_percent: int  # Обязательное поле
-    location: Optional[str] = None  # Опциональное поле
+    temperature_c: float
+    humidity_percent: int
+    location: Optional[str] = None
+
+    @field_validator("temperature_c", mode="before")
+    def parse_temperature(cls, v):
+        if v is None:
+            return v
+        if isinstance(v, str):
+            v = v.strip().replace(",", ".")
+            if v == "":
+                return None
+        return float(v)
 ```
 
-**Ключевой момент:** `extra='forbid'` — это **первая линия обороны** против грязных данных!
+Что здесь важно:
 
-### Шаг 3: Загрузка в DataFrame и валидация
+- `extra='forbid'` — запрет любых полей, не описанных в модели (первая линия обороны против «мусорных» атрибутов);
+- обязательные поля `temperature_c` и `humidity_percent` — записи без них считаются невалидными;
+- `field_validator("temperature_c", mode="before")` реализует **умную конвертацию**: строки вроде `"30"` или `"30,2"` превращаются в `float`, а не ломают валидацию.
 
-```python
-import pandas as pd
-from pydantic import ValidationError
+### Шаг 3. Валидация и разделение потоков
 
-df = pd.DataFrame(messy_records)
-errors = []
+Для каждой строки DataFrame:
 
-for idx, row in df.iterrows():
-    data = row.to_dict()
-    data = {k: v for k, v in data.items() if pd.notna(v)}  # Убираем NaN
-    try:
-        reading = SensorReading(**data)
-    except ValidationError as e:
-        errors.append((idx, e))
+1. Строка переводится в dict и очищается от `NaN`.
+2. Создаётся `SensorReading(**data)`, либо ловится `ValidationError`.
+3. Валидные записи попадают в список `valid_readings`, ошибки — в список `errors`.
+
+Результат:
+
+- `clean_sensor_data.csv` — только валидные записи с нормализованными полями (`temperature_c` уже `float`);
+- `sensor_data_errors.csv` — таблица с индексом строки и текстом ошибки валидации.
+
+### Шаг 4. Метрики качества данных
+
+Скрипт считает:
+
+- общее количество строк;
+- количество и долю валидных записей;
+- количество и долю записей с ошибками.
+
+Пример:
+
+```text
+Всего строк: 6
+Валидных: 2 (33.3%)
+С ошибками: 4 (66.7%)
 ```
 
-### Шаг 4: Отчёт об ошибках
+Это даёт простую оценку качества датасета (validity/completeness) — важную часть любого data pipeline.
 
-Скрипт выводит все ошибки валидации с указанием:
-- 🔴 Номер строки в DataFrame
-- 🔴 Тип ошибки (extra_forbidden, missing, type mismatch)
-- 🔴 Описание проблемы
+### Шаг 5. Агрегированный отчёт по типам ошибок
 
-**Пример вывода:**
-```
-Ошибки валидации:
+На основе `sensor_data_errors.csv` строится `sensor_error_stats.csv` — сводка, какие ошибки встречаются чаще всего (например, `extra_field not permitted`, `field required`, `value is not a valid float`).
 
-Row 0:
-1 validation error for SensorReading
-extra_field
-  Extra inputs are not permitted [type=extra_forbidden, input_value='oops', input_type=str]
+Это помогает понять, **какие правила ломаются чаще** и куда направлять следующие шаги очистки или изменения источника.
 
-Row 2:
-1 validation error for SensorReading
-humidity_percent
-  Field required [type=missing, ...]
+## 💡 Ключевые концепции, которые отрабатываются в проекте
 
-Row 4:
-1 validation error for SensorReading
-temperature_c
-  Field required [type=missing, ...]
-```
-
----
-
-## 💡 Ключевые концепции
-
-### 1. Pydantic ConfigDict vs старый class Config
-
-✅ **Современный подход (v2):**
-```python
-model_config = ConfigDict(extra='forbid')
-```
-
-❌ **Устаревший подход (будет удалён в v3):**
-```python
-class Config:
-    extra = 'forbid'
-```
-
-### 2. Почему extra='forbid' критично?
-
-Без этого параметра Pydantic молча игнорирует неизвестные поля — это может привести к:
-- 🚨 Потере данных
-- 🚨 Непредсказуемым ошибкам в системе
-- 🚨 Проблемам отладки
-
-**С extra='forbid':** всё неизвестное отклоняется сразу, на входе.
-
-### 3. Виртуальные окружения (venv)
-
-Каждый проект должен иметь изолированное окружение:
-- Зависимости не смешиваются с глобальной системой
-- Разные проекты могут использовать разные версии библиотек
-- Легко поделиться требованиями через `requirements.txt`
-
----
+- Валидация схемы данных через Pydantic v2 (`BaseModel`, `ConfigDict`, `field_validator`).
+- Запрет неизвестных полей (`extra='forbid'`) как защита от неожиданной структуры данных.
+- Преобразование типов на этапе валидации (строки → числа) вместо жёсткого падения.
+- Разделение потока данных на «чистый» слой и лог ошибок.
+- Базовые **data quality metrics** и отчёт по ошибкам как часть пайплайна.
 
 ## 📈 Уровни сложности задач
 
-| Задача | Сложность | Что учится |
-|--------|-----------|------------|
-| Создание грязных данных | ⭐☆☆☆☆ | Структурирование данных, JSON |
-| Pydantic-модель | ⭐⭐⭐☆☆ | ConfigDict, типизация, Pydantic v2 |
-| Загрузка в Pandas | ⭐⭐☆☆☆ | DataFrame, работа с табличными данными |
-| Валидация через Pydantic | ⭐⭐⭐⭐☆ | Обработка ошибок, ETL-подход, инженерные практики |
-| Работа с venv | ⭐⭐☆☆☆ | Виртуальные окружения, pip, изоляция зависимостей |
+| Задача                         | Сложность | Что отрабатывается |
+| ------------------------------ | --------- | ------------------- |
+| Работа с `messy_data.json`    | ⭐☆☆☆     | JSON, структура данных |
+| Pydantic‑модель сенсора       | ⭐⭐⭐☆☆    | Типизация, ConfigDict, Pydantic v2 |
+| Загрузка в pandas DataFrame   | ⭐⭐☆☆☆    | Табличные данные, `iterrows` |
+| Валидация + авто‑очистка      | ⭐⭐⭐☆     | ETL‑подход, обработка ошибок |
+| Генерация отчётов и метрик    | ⭐⭐☆☆☆    | Data quality, аналитика ошибок |
 
----
+## 🔧 Возможные направления развития
 
-## 🔧 Дальнейшее развитие
+- Добавить дополнительные валидаторы (диапазоны температуры и влажности, формат `sensor_id`).
+- Научить скрипт автоматически исправлять ещё несколько типов грязи (например, разумно обрабатывать `null` или заполнять пропуски).
+- Вынести параметры (диапазоны, обязательные поля) в конфиг.
+- Обернуть пайплайн в планировщик (cron / Airflow / Prefect) и добавить логирование/аларминг при деградации качества.
 
-Сейчас скрипт только выявляет ошибки. Следующие шаги:
+## 🎓 Чему учится Junior Engineer на этом проекте
 
-- [ ] Реализовать **автоматическую очистку данных**
-  - Конвертировать строку `"30"` → `30.0`
-  - Заполнять пропуски средним значением или дефолтом
-  - Отбрасывать или лечить лишние поля
-- [ ] Добавить **кастомные валидаторы**
-  - Диапазоны для температуры и влажности
-  - Проверка формата sensor_id
-- [ ] Сохранять **чистые данные** в CSV/JSON
-- [ ] Добавить **логирование** ошибок валидации
-- [ ] Покрыть код **unit-тестами**
-
----
-
-## 📚 Полезные ресурсы
-
-- [Pydantic Official Docs](https://docs.pydantic.dev/)
-- [Pydantic V2 Migration Guide](https://docs.pydantic.dev/2.0/migration/)
-- [Pandas Documentation](https://pandas.pydata.org/docs/)
-- [Python Virtual Environments](https://docs.python.org/3/tutorial/venv.html)
-
----
-
-## 🎓 Чему ты научился на этом проекте
-
-✅ Создавать Pydantic-модели со строгой валидацией  
-✅ Запрещать неизвестные поля через `extra='forbid'`  
-✅ Обрабатывать ValidationError без падения программы  
-✅ Работать с DataFrame и итерироваться по строкам  
-✅ Использовать виртуальные окружения (venv)  
-✅ Публиковать код на GitHub  
-✅ Писать документацию (README)  
-
----
+- Строить минимальный, но **целостный data pipeline** от сырого JSON до чистого CSV и отчётов.
+- Использовать Pydantic v2 для строгой валидации и преобразования данных.
+- Работать с pandas для построчной обработки и отчётности.
+- Мыслить категориями качества данных (валидные/невалидные записи, типы ошибок, метрики).
 
 ## 👨‍💻 Автор
 
-**Ваня** (vsanyanov-ux) — Junior Data Engineer, обучается лучшим практикам работы с данными.
-
----
-
-## 📄 Лицензия
-
-Мит лицензия (MIT) — используй как хочешь!
-
----
-
-**Удачи, детектив грязных данных! 🔍✨**
+**Ваня** (vsanyanov-ux) — Junior AI / Data Engineer, изучающий практики очистки и контроля качества данных в пайплайнах.
