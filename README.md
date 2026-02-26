@@ -226,4 +226,4 @@ class SensorReading(BaseModel):
 
 ## 👨‍💻 Автор
 
-**Ваня** (vsanyanov-ux) — Junior AI / Data Engineer, изучающий практики очистки и контроля качества данных в пайплайнах.
+**Владимир Аньянов** (vsanyanov-ux) — Junior AI / Data Engineer, изучающий практики очистки и контроля качества данных в пайплайнах.
