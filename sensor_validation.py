@@ -1,8 +1,4 @@
 import json
-
-with open("messy_data.json", "w") as f:
-    json.dump(messy_records, f, ensure_ascii=False, indent=2)
-
 from pydantic import BaseModel, ConfigDict, field_validator
 from typing import Optional
 
