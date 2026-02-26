@@ -29,7 +29,7 @@
     "location": "Room3"
   },
   {
-    "sensor_id": "B2",
+    "sensor_id": "F6",
     "temperature_c": "30,2",
     "humidity_percent": 45
   }
